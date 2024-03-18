@@ -1,10 +1,12 @@
-import { useCallback, useState,useEffect } from 'react'
+import { useCallback, useState,useEffect,useRef } from 'react'
 
 function App() {
   const [length, setLength] = useState(8)
   const [num, setNum] = useState(true)
   const [char , setChar] = useState(true)
   const [password, setPassword] = useState('')
+
+  const passwordRef = useRef(null)
   
   const passwordGenerator = useCallback(()=> {
     let chars = ''
@@ -16,6 +18,11 @@ function App() {
     }
     setPassword(password)
   } ,[length, num, char, password]) 
+
+  const copyPassword = useCallback(() => {
+    passwordRef.current.select();
+    navigator.clipboard.writeText(password)
+  },[password])
 
   useEffect(()=>{passwordGenerator()},[length, num, char])
   return (
@@ -29,9 +36,11 @@ function App() {
         value={password}
         className='outline-none w-full py-1 px-3 '
         placeholder='password'
-        readOnly />
+        readOnly
+        ref={passwordRef} />
 
-        <button className='outline-none bg-blue-600 text-white px-3 py-0.5 shrink-0' >Copy</button>
+        <button
+        onClick={copyPassword} className='outline-none bg-blue-600 text-white px-3 py-0.5 shrink-0' >Copy</button>
         </div> 
         <div className='flex justify-between items-center px-5 py-1'>
         <input type="range" className='cursor-pointer' onChange={(e) => setLength(e.target.value)} />
